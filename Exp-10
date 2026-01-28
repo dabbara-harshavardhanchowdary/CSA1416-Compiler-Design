@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAX_LEN 100
+
+char input[MAX_LEN];
+int pos = 0;
+
+void E();
+void E_prime();
+void T();
+void T_prime();
+void F();
+
+void match(char expected) {
+    if (input[pos] == expected) {
+        pos++;
+    } else {
+        printf("Error: Expected '%c' at position %d\n", expected, pos);
+        exit(1);
+    }
+}
+
+void E() {
+    T();
+    E_prime();
+}
+
+void E_prime() {
+    if (input[pos] == '+') {
+        match('+');
+        T();
+        E_prime();
+    }
+    // E' -> ε
+}
+
+void T() {
+    F();
+    T_prime();
+}
+
+void T_prime() {
+    if (input[pos] == '*') {
+        match('*');
+        F();
+        T_prime();
+    }
+    // T' -> ε
+}
+
+void F() {
+    if (input[pos] == '(') {
+        match('(');
+        E();
+        match(')');
+    } else if (isalnum(input[pos])) {
+        while (isalnum(input[pos])) {
+            pos++;
+        }
+    } else {
+        printf("Error: Unexpected character '%c' at position %d\n", input[pos], pos);
+        exit(1);
+    }
+}
+
+int main() {
+    printf("Enter an expression: ");
+    scanf("%s", input);
+
+    E();
+
+    if (input[pos] == '\0') {
+        printf("The string is accepted.\n");
+    } else {
+        printf("Error: Unexpected character '%c' at position %d\n", input[pos], pos);
+    }
+
+    return 0;
+}
